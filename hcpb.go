@@ -7,14 +7,17 @@ import (
 	"time"
 )
 
-const pieces = 40
-const padding = "       "
+const (
+	pieces  = 30
+	refresh = 0.1
+)
 
 type ProgressBar struct {
 	started    time.Time
 	max        int
 	pos        int
-	lastUpdate time.Time
+	lastDraw time.Time
+	longestLine int
 }
 
 func (b *ProgressBar) Inc() {
@@ -27,14 +30,15 @@ func New(max int) *ProgressBar {
 	b.started = time.Now()
 	b.max = max
 	b.pos = 0
-	b.lastUpdate = time.Now().AddDate(0, 0, -1)
+	b.lastDraw = time.Now().AddDate(0, 0, -1)
+	b.longestLine = 0
 	return b
 }
 
 func (b *ProgressBar) draw() {
-	secs := time.Since(b.lastUpdate).Seconds()
-	if secs >= 0.1 || b.max == b.pos {
-		b.lastUpdate = time.Now()
+	secs := time.Since(b.lastDraw).Seconds()
+	if secs >= refresh || b.max == b.pos {
+		b.lastDraw = time.Now()
 		elapsed := time.Since(b.started).Seconds()
 		perSecond := 0.0
 		if elapsed != 0 {
@@ -53,10 +57,22 @@ func (b *ProgressBar) draw() {
 		line += string("]")
 
 		e := secondsToMinutes(int(elapsed))
-		remainingSeconds := math.Round((float64(b.max) - float64(b.pos)) / perSecond)
-		r := secondsToMinutes(int(remainingSeconds))
+		remaining := math.Round((float64(b.max) - float64(b.pos)) / perSecond)
+		r := secondsToMinutes(int(remaining))
 
-		fmt.Printf("\r%s %s/%s @ %.0f/s in %s ETA %s %s\r", line, toHumanReadable(b.pos), toHumanReadable(b.max), perSecond, e, r, padding)
+		out := fmt.Sprintf("\r%s %s/%s @ %.0f/s in %s ETA %s\r", line, toHumanReadable(b.pos), toHumanReadable(b.max), perSecond, e, r)
+		if len(out) > b.longestLine {
+			b.longestLine = len(out)
+		}
+		for {
+			if len(out) < b.longestLine {
+				out += " "
+			} else {
+				break
+			}
+
+		}
+		fmt.Print(out)
 	}
 }
 
