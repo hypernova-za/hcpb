@@ -1,4 +1,4 @@
-package hyperpb
+package hcpb
 
 import (
 	"fmt"
