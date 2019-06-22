@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	pieces  = 30
-	refresh = 0.1
+	pieces  = 40
+	refresh = 0.2
 )
 
 type ProgressBar struct {
@@ -59,6 +59,9 @@ func (b *ProgressBar) draw() {
 		e := secondsToMinutes(int(elapsed))
 		remaining := math.Round((float64(b.max) - float64(b.pos)) / perSecond)
 		r := secondsToMinutes(int(remaining))
+		if len(r) > 6 {
+			r = "~"
+		}
 
 		out := fmt.Sprintf("\r%s %s/%s @ %.0f/s in %s ETA %s\r", line, toHumanReadable(b.pos), toHumanReadable(b.max), perSecond, e, r)
 		if len(out) > b.longestLine {
