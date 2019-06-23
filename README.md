@@ -1,4 +1,4 @@
-# hcpb
+# hcpb - Go progress bar for console
 
 Simple console progress bar for Golang which shows the following info
 - Progress bar
