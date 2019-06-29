@@ -46,7 +46,7 @@ func (b *ProgressBar) draw() {
 		}
 		donePieces := int(math.Round(float64(b.pos) / float64(b.max) * pieces))
 		var line string
-		line = string('[')
+		line = " ["
 		for i := 1; i <= pieces; i++ {
 			if donePieces < i {
 				line += string(" ")
